@@ -47,3 +47,15 @@ incrementCounter();
 // Function Scope: count is scoped to createCounter, and each call to myCounter uses the same count due to closure.
 // Block Scope: message is only accessible inside the if block.
 // Arrow Functions and this: arrowFunc in user.greet inherits this from user.
+
+function outer() {
+  let name = "Alice"; // Lexical scope: `name` is available here
+
+  return function inner() {
+      console.log(name); // Closure: `name` is captured by `inner`
+  };
+}
+
+const innerFunction = outer(); // `outer` is executed, and `name` is defined
+innerFunction(); // Output: Alice (closure allows access to `name`)
+
