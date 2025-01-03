@@ -1,0 +1,44 @@
+/* alert.css */
+
+/* Common alert styles */
+.alert {
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 100%;
+    max-width: 400px;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  /* Success Alert */
+  .alert-success {
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+    color: #3c763d;
+  }
+  
+  /* Error Alert */
+  .alert-danger {
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    color: #a94442;
+  }
+  
+  /* Info Alert */
+  .alert-info {
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+    color: #31708f;
+  }
+  
+  /* Optional: Auto-remove alert animation */
+  @keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  
+  .alert.dismissed {
+    animation: fadeOut 1s forwards;
+  }
+  

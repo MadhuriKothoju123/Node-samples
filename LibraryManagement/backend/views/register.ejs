@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+      rel="stylesheet"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"
+      defer
+    ></script>
+    <title>Register</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background-color: #f5f5f5;
+      }
+      .form-container {
+        max-width: 400px;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="form-container">
+      <h5 class="center-align">Register</h5>
+      <form action="/api/auth/register" method="POST">
+        <div class="input-field">
+          <input type="text" id="username" name="username" required />
+          <label for="username">Username</label>
+        </div>
+
+        <div class="input-field">
+          <input type="email" id="email" name="email" required />
+          <label for="email">Email</label>
+        </div>
+
+        <div class="input-field">
+          <input type="password" id="password" name="password" required />
+          <label for="password">Password</label>
+        </div>
+
+        <div class="input-field">
+          <select name="userType" required>
+            <option value="" disabled selected>Select User Type</option>
+            <option value="premium">Premium</option>
+            <option value="regular">Regular</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn waves-effect waves-light full-width">
+          Register
+        </button>
+      </form>
+
+      <div class="center-align" style="margin-top: 15px">
+        <a href="login">Already have an account? Login here.</a>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const elems = document.querySelectorAll("select");
+        M.FormSelect.init(elems);
+      });
+    </script>
+  </body>
+</html>

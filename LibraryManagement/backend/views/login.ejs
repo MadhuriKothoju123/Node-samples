@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+      rel="stylesheet"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"
+      defer
+    ></script>
+    <link rel="stylesheet" href="/static/css/alert.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background-color: #f5f5f5;
+      }
+      .form-container {
+        max-width: 400px;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="form-container">
+      <h5 class="center-align">Login</h5>
+      <% if (errorMessage && errorMessage.length > 0) { %>
+      <script defer>
+        showAlert("error", "<%= errorMessage %>");
+      </script>
+      <% } %> <% if (successMessage && successMessage.length > 0) { %>
+      <script defer>
+        showAlert("success", "<%= successMessage %>");
+      </script>
+      <% } %>
+
+      <form action="/api/auth/login" method="POST" id="loginForm">
+        <div class="input-field">
+          <input type="email" id="email" name="email" required />
+          <label for="email">Email</label>
+        </div>
+
+        <div class="input-field">
+          <input type="password" id="password" name="password" required />
+          <label for="password">Password</label>
+        </div>
+
+        <button type="submit" class="btn waves-effect waves-light full-width">
+          Login
+        </button>
+      </form>
+
+      <div class="center-align" style="margin-top: 15px">
+        <a href="/api/auth/register">Don't have an account? Register here.</a>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", async function () {
+        isUserLogined();
+      });
+      const isUserLogined = async () => {
+        const user = "<%= user?.username %>";
+        console.log(user, "username");
+        if (user) {
+          window.location.href = "/api/library/getAllBooksPage";
+        }
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Books</title>
+  </head>
+  <body>
+    <h1>All Books</h1>
+    <ul>
+      <% if(books) {%> <% books.forEach(book => { %>
+      <li onclick="showPdf('<%= book.pdf %>')">
+        <img
+          src="http://localhost:4000/files/<%= book.image %>"
+          alt="Book Image"
+          width="100"
+          height="100"
+        />
+      </li>
+      <li><strong><%= book.title %></strong> by <%= book.author %></li>
+
+      <% }) %> <% } %>
+      <li><button onclick="editBook()">edit</button>
+        <button onclick="deleteBook()">delete</button>
+      </li>
+    </ul>
+
+    <button onclick="addBook()">Add Book</button>
+  </body>
+  <script>
+      
+    const showPdf = (pdf) => {
+      console.log(pdf);
+      window.open(`http://localhost:4000/files/${pdf}`, "_blank", "noreferrer");
+      // setPdfFile(`http://localhost:5000/files/${pdf}`)
+    };
+  
+
+    // async function navigateToAddBookPage() {
+    //   const token = localStorage.getItem("authToken");
+    //   console.log(token, "token");
+    //   if (!token) {
+    //     alert("Unauthorized. Please log in.");
+    //     return;
+    //   }
+
+    //   fetch("http://localhost:4000/api/library/addBook", {
+    //     method: "GET",
+    //     headers: { Authorization: `Bearer ${token}` }, // Include token
+    //   })
+    //     .then((response) => {
+    //       if (response.ok) {
+    //         console.log(response, "response");  
+    //         window.location.href = response.url;
+    //       } else {
+    //         return response
+    //           .json()
+    //           .then((data) => alert(data.error || "Access denied"));
+    //       }
+    //     })
+    //     .catch((err) => console.error("Error:", err));
+    // }
+  </script>
+</html>

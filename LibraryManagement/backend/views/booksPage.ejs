@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Books Cards</title>
+  <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+      rel="stylesheet"
+    />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Cards Container */
+  .cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+
+  /* Individual Card */
+  .card {
+    width: 300px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+  }
+
+  .card-title {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 20px;
+    text-align: left;
+  }
+
+  .card-content {
+    padding: 10px 20px;
+    text-align: left;
+  }
+
+  .card-content p {
+    font-size: 14px;
+    margin: 5px 0;
+    color: #333333;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f0f8f8;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  /* Card Footer Buttons */
+  .card-footer button {
+    border: 1px solid #ccc;
+    background: white;
+    padding: 8px;
+    margin: 0 5px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 10px;
+  }
+
+  .card-footer button:hover {
+    background-color: #f0f0f0;
+  }
+
+  .card-footer a {
+    text-decoration: none;
+    color: #1b8f85;
+    font-weight: bold;
+  }
+
+  .card-footer a:hover {
+    text-decoration: underline;
+  }
+
+  /* Toggle Switch */
+  .toggle {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 25px;
+  }
+
+  .toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    border-radius: 25px;
+    transition: 0.4s;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.4s;
+  }
+
+  input:checked + .slider {
+    background-color: #1b8f85;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(24px);
+  }
+
+  #toggleLabel {
+    margin-left: 10px;
+    font-size: 16px;
+    vertical-align: middle;
+  }
+</style>
+
+</head>
+<body>
+  <div class="container" style="width: 100%; max-width: 100% !important;">
+    <!-- Display Flash Messages -->
+    <% if (errorMessage && errorMessage.length > 0) { %>
+      <script>
+        M.toast({ html: "<%= errorMessage %>", classes: "red darken-1" });
+      </script>
+    <% } %>
+    <% if (successMessage && successMessage.length > 0) { %>
+      <script>
+        M.toast({ html: "<%= successMessage %>", classes: "green darken-1" });
+      </script>
+    <% } %>
+  
+    <!-- User Row -->
+    <div class="row valign-wrapper" style="background-color: #d6e7d6;" >
+      <div class="col s8">
+       <h5 style="color: #655b6a;">Library Management</h5>
+      </div>
+      <div class="col s4 right-align" style="display: flex; margin: 20px; justify-content: end; align-items: center; gap: 6px;">
+        <% if (user) { %>
+          <h6>Welcome, <%= user.username %>!</h6>
+          <button class="btn red lighten-1" onclick="logoutUser()">Logout</button>
+        <% } else { %>
+          <h6>Welcome, Guest!</h6>
+          <button class="btn blue lighten-1" onclick="navigateToLogin()">Login</button>
+        <% } %>
+      </div>
+    </div>
+  
+    <!-- Add Book and Toggle Row -->
+    <div style="display: flex; justify-content:end;" >
+      <div>
+        <button id="addBookButton" class="btn green lighten-1" style="display: none;" onclick="addBook()">Add Book</button>
+      </div>
+      <% if (user) { %>
+      <div  class=" right-align">
+        <div class="switch">
+          <label>
+            <input type="checkbox" id="toggleView" onchange="toggleBooksView()" />
+            <span class="lever"></span>
+            <span id="toggleLabel">Show All Books</span>
+          </label>
+        </div>
+      </div>
+      <% } %>
+    </div>
+  <div>
+    
+  </div>
+    <!-- Cards Row -->
+    <div class="row cards-container" id="cardsContainer">
+      <!-- Cards will be dynamically added here -->
+    </div>
+  </div>
+
+  <script>
+    let allBooks = [];
+    let isUserBooksView = false;
+    let userId;
+    let userType;
+
+    const showPdf = (pdf) => {
+      window.open(`http://localhost:4000/files/${pdf}`, "_blank", "noreferrer");
+    };
+
+    const navigateToLogin = () => {
+      window.location.href = "/api/auth/login";
+    };
+
+    const getBooks = async () => {
+      try {
+        const res = await axios.get("http://localhost:4000/api/library/getAllBooks");
+        allBooks = res.data.books;
+        userId = res.data.userDetails.user._id;
+        userType = res.data.userDetails.user.userType;
+
+        const addBookButton = document.getElementById("addBookButton");
+        if (userType === "premium") {
+          addBookButton.style.display = "block";
+        }
+
+        const toggleView = document.getElementById("toggleView");
+        const toggleLabel = document.getElementById("toggleLabel");
+        if (userType !== "premium") {
+          toggleView.disabled = true;
+          toggleLabel.textContent = "Viewing All Books";
+          renderBooks(allBooks);
+        } else {
+          renderBooks(allBooks);
+        }
+      } catch (error) {
+        console.error("Error fetching books:", error);
+        M.toast({ html: "Failed to fetch books. Please login.", classes: "red darken-1" });
+      }
+    };
+
+    const toggleBooksView = () => {
+      const toggleSwitch = document.getElementById("toggleView");
+      const label = document.getElementById("toggleLabel");
+      isUserBooksView = toggleSwitch.checked;
+
+      if (isUserBooksView && userType === "premium") {
+        label.textContent = "Show User Books";
+        getUserBooks();
+      } else {
+        label.textContent = "Show All Books";
+        renderBooks(allBooks);
+      }
+    };
+
+    const getUserBooks = () => {
+      if (!userId) {
+        alert("User ID not found. Please log in.");
+        return;
+      }
+      const userBooks = allBooks.filter((book) => book.userId === userId);
+      renderBooks(userBooks);
+    };
+
+    const renderBooks = (books) => {
+      const cardsContainer = document.getElementById("cardsContainer");
+      cardsContainer.innerHTML = "";
+
+      if (books.length === 0) {
+        cardsContainer.innerHTML = "<p class='center-align grey-text'>No books available.</p>";
+        return;
+      }
+
+        books.forEach((book) => {
+          const card = document.createElement("div");
+          card.classList.add("card");
+
+          const cardImage = document.createElement("img");
+          cardImage.src = book.image
+            ? `http://localhost:4000/files/${book.image}`
+            : "https://via.placeholder.com/300x150";
+          cardImage.alt = book.title || "Book Image";
+          cardImage.classList.add("card-img");
+          cardImage.addEventListener("click", () => {
+            showPdf(book.pdf); // Assuming book.pdf contains the PDF filename
+          });
+
+          const cardTitle = document.createElement("div");
+          cardTitle.classList.add("card-title");
+          cardTitle.textContent = book.title || "Untitled";
+
+          const cardContent = document.createElement("div");
+          cardContent.classList.add("card-content");
+          cardContent.innerHTML = `<p><strong>Author:</strong> ${
+            book.author || "Unknown"
+          }</p>`;
+          // Card Footer
+          const cardFooter = document.createElement("div");
+          cardFooter.classList.add("card-footer");
+
+          // --- Conditional Buttons ---
+          // Show Download Button for Premium Users
+          if (userType === "premium") {
+            const downloadButton = document.createElement("button");
+            downloadButton.classList.add("download-button");
+            downloadButton.innerHTML = '<i class="fas fa-download"></i>';
+            downloadButton.addEventListener("click", () => {
+              const pdfFileName = book.pdf; // Assume 'book.pdf' contains the file name
+              const downloadUrl = `http://localhost:4000/api/library/download/${pdfFileName}`;
+
+              // Create a temporary link to trigger the server-side download
+              const a = document.createElement("a");
+              a.href = downloadUrl;
+              a.target = "_blank"; // Open in a new tab if needed
+              document.body.appendChild(a);
+              a.click(); // Trigger the download
+              document.body.removeChild(a); // Clean up
+            });
+            cardFooter.appendChild(downloadButton);
+            cardFooter.appendChild(downloadButton);
+          }
+
+          // Show Edit and Delete Buttons if Premium User and Viewing User's Books
+          if (userType === "premium" && isUserBooksView) {
+            const rightButtonsContainer = document.createElement("div");
+            rightButtonsContainer.classList.add("right-buttons");
+
+            const editButton = document.createElement("button");
+            editButton.classList.add("edit-button");
+            editButton.innerHTML = '<i class="fas fa-edit"></i>';
+            editButton.addEventListener("click", async () => {
+              console.log("Edit button clicked");
+              window.location.href = `/api/library/addOrEditBook?id=${book._id}`;
+            });
+
+            const deleteButton = document.createElement("button");
+            deleteButton.classList.add("delete-button");
+            deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+            deleteButton.addEventListener("click", async () => {
+              try {
+                console.log(book, "book");
+                console.log(book._id, "book._id");
+                console.log(typeof book._id);
+
+                const res = await axios.delete(
+                  `http://localhost:4000/api/library/deleteBook/${book._id}`
+                );
+                console.log(res, "res.data");
+                if (res.status === 200) window.location.reload();
+              } catch (error) {
+                console.error(error);
+              }
+            });
+
+            rightButtonsContainer.appendChild(editButton);
+            rightButtonsContainer.appendChild(deleteButton);
+
+            cardFooter.appendChild(rightButtonsContainer);
+          }
+
+          card.appendChild(cardImage);
+          card.appendChild(cardTitle);
+          card.appendChild(cardContent);
+          card.appendChild(cardFooter);
+          cardsContainer.appendChild(card);
+        });
+      };
+
+      getBooks();
+
+    const addBook = () => {
+      window.location.href = "/api/library/addOrEditBook";
+    };
+
+    async function logoutUser() {
+        try {
+          const response = await fetch("/api/auth/logout", { method: "POST" });
+          if (response.ok) {
+            alert("Logout successful!");
+            window.location.href = "/api/auth/login"; // Redirect to login
+          } else {
+            alert("Failed to logout. Please try again.");
+          }
+        } catch (error) {
+          console.error("Error logging out:", error);
+          alert("An error occurred while logging out.");
+        }
+      }
+
+    </script>
+  </body>
+</body>
+</html>

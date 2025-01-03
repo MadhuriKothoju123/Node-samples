@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+      rel="stylesheet"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"
+      defer
+    ></script>
+    <style>
+      body {
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .form-container {
+        margin-top: 50px;
+      }
+      .form-footer {
+        margin-top: 20px;
+        display: flex;
+        justify-content: flex-end;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container form-container">
+      <h4 class="center-align"><%= title %></h4>
+      <form id="addBookForm" class="card">
+        <div class="card-content">
+          <input type="hidden" name="bookId" id="bookId" />
+
+          <div class="input-field">
+            <input
+              type="text"
+              name="title"
+              id="title"
+              required
+              placeholder="Enter Book Title"
+            />
+            <label for="title">Title</label>
+          </div>
+
+          <div class="input-field">
+            <input
+              type="text"
+              name="author"
+              id="author"
+              required
+              placeholder="Enter Author Name"
+            />
+            <label for="author">Author</label>
+          </div>
+
+          <div class="file-field input-field">
+            <div class="btn">
+              <span>Upload Image</span>
+              <input type="file" name="image" accept="image/*" <%= editMode ?
+              "disabled" : "" %> />
+            </div>
+            <div class="file-path-wrapper">
+              <input autocomplete="off" id="imagePath" class="file-path
+              validate" type="text" placeholder="Upload a book image" <%=
+              editMode ? "disabled" : "" %> />
+            </div>
+          </div>
+
+          <div class="file-field input-field">
+            <div class="btn">
+              <span>Upload PDF</span>
+              <input type="file" name="pdf" accept="application/pdf" required
+              <%= editMode ? "disabled" : "" %> />
+            </div>
+            <div class="file-path-wrapper">
+              <input autocomplete="off" id="pdfPath" class="file-path validate"
+              type="text" placeholder="Upload a book PDF" <%= editMode ?
+              "disabled" : "" %> />
+            </div>
+          </div>
+        </div>
+
+        <div class="card-action form-footer">
+          <button id="submitButton" type="submit" class="btn green">
+            Add Book
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      let edit = "<%= editMode %>";
+      const bookId = "<%= bookId %>";
+      let editData = JSON.parse(edit);
+
+      function populateForm(book) {
+        document.getElementById("bookId").value = book._id; // Set the book ID for editing
+        document.getElementById("title").value = book.title;
+        document.getElementById("author").value = book.author;
+        if (book.image) {
+          document.getElementById("imagePath").value = book.image;
+        }
+        if (book.pdf) {
+          document.getElementById("pdfPath").value = book.pdf;
+        }
+        document.getElementById("submitButton").innerText = "Update Book";
+      }
+
+      // Load book data for editing
+      const loadBookForEdit = ((data) => {
+        if (editData && bookId) {
+          fetch(`/api/library/getBook/${bookId}`)
+            .then((response) => response.json())
+            .then((book) => {
+              const documentData = book._doc;
+              if (documentData) {
+                populateForm(documentData);
+              }
+            });
+        }
+      })();
+
+      document
+        .getElementById("addBookForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const form = event.target;
+          const formData = new FormData(form);
+
+          try {
+            const res = await fetch(
+              editData
+                ? `/api/library/updateBook/${bookId}`
+                : "/api/library/addBook",
+              {
+                method: editData ? "PUT" : "POST",
+                headers: {
+                  ...(editData && { "Content-Type": "application/json" }),
+                },
+                body: editData
+                  ? JSON.stringify(Object.fromEntries(formData))
+                  : formData,
+              }
+            );
+
+            if (res.ok) {
+              window.location.href = "/api/library/getAllBooksPage";
+            }
+          } catch (error) {
+            console.error(error);
+            alert("Failed to add book. Check the console for more details.");
+          }
+        });
+    </script>
+  </body>
+</html>
