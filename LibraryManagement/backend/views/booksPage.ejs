@@ -311,26 +311,7 @@
           cardFooter.classList.add("card-footer");
 
           // --- Conditional Buttons ---
-          // Show Download Button for Premium Users
-          if (userType === "premium") {
-            const downloadButton = document.createElement("button");
-            downloadButton.classList.add("download-button");
-            downloadButton.innerHTML = '<i class="fas fa-download"></i>';
-            downloadButton.addEventListener("click", () => {
-              const pdfFileName = book.pdf; // Assume 'book.pdf' contains the file name
-              const downloadUrl = `http://localhost:4000/api/library/download/${pdfFileName}`;
-
-              // Create a temporary link to trigger the server-side download
-              const a = document.createElement("a");
-              a.href = downloadUrl;
-              a.target = "_blank"; // Open in a new tab if needed
-              document.body.appendChild(a);
-              a.click(); // Trigger the download
-              document.body.removeChild(a); // Clean up
-            });
-            cardFooter.appendChild(downloadButton);
-            cardFooter.appendChild(downloadButton);
-          }
+       
 
           // Show Edit and Delete Buttons if Premium User and Viewing User's Books
           if (userType === "premium" && isUserBooksView) {

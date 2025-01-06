@@ -5,10 +5,7 @@ const mongoose = require("mongoose");
 const sessionManager = require("../utils/sessionUser");
 const Library = require("../model/library");
 
-// Initialize session handler
-const sessionHandler = sessionManager();
 
-// Controller methods
 
 /**
  * Render add/edit book form.
@@ -41,6 +38,7 @@ const addOrEditBook = async (req, res) => {
  * Add a new book.
  */
 const addBook = async (req, res) => {
+  const sessionHandler = sessionManager();
   const { title, author } = req.body;
   const pdfFile = req.files.pdf[0];
   const imageFile = req.files.image[0];
@@ -68,6 +66,7 @@ const addBook = async (req, res) => {
  * Retrieve all books.
  */
 const getAllBooks = async (req, res) => {
+  const sessionHandler = sessionManager();
   try {
     const books = await Library.find();
     const userDetails = sessionHandler.getUserSession(req);
@@ -83,6 +82,7 @@ const getAllBooks = async (req, res) => {
  * Retrieve a book by ID.
  */
 const getBookById = async (req, res) => {
+  const sessionHandler = sessionManager();
   const { id } = req.params;
   const { loggedIn } = sessionHandler.getUserSession(req);
 

@@ -1,9 +1,9 @@
 const User = require("../model/userModel");
 const bcrypt = require("bcrypt");
-// const jwt = require("jsonwebtoken");
 
 const sessionManager = require("../utils/sessionUser");
-const sessionHandler = sessionManager();
+
+
 exports.registerUser = async (req, res) => {
   try {
     const { username, email, password, userType } = req.body;
@@ -29,6 +29,7 @@ exports.registerUser = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
+  const sessionHandler = sessionManager();
   try {
     const { email, password } = req.body;
 
@@ -66,10 +67,8 @@ exports.registrationPage = async (req, res) => {
   res.render("register");
 };
 
-exports.registration = async (req, res) => {
-  res.json({ name: "madhuri" });
-};
 exports.logoutUser = async (req, res) => {
+  const sessionHandler = sessionManager();
   sessionHandler.destroySession(req, (err) => {
     if (err) {
       console.error(err, "error");

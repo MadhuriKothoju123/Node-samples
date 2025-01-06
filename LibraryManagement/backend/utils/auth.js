@@ -19,25 +19,9 @@ const isAuthenticatedMiddleware = (req, res, next) => {
 
 module.exports = { isAuthenticatedMiddleware };
 
-// function authenticateToken(req, res, next) {
-//   const token = req.session?.token;
-//   console.log(req.session?.token);
-//   console.log(req.session?.user);
-//   if (!token) {
-//     return res.status(401).json({ error: "No token provided in session" });
-//   }
 
-//   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-//     if (err) {
-//       if (err.name === "TokenExpiredError") {
-//         return res.status(401).json({ error: "Token expired" });
-//       }
-//       return res.status(401).json({ error: "Invalid token" });
-//     }
 
-//     console.log(decoded, "decoded");
-//     req.user = decoded;
-//     next();
-//   });
-// }
-// module.exports = authenticateToken;
+
+
+
+

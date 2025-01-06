@@ -4,6 +4,7 @@
  * @returns {Object} An object containing session management methods.
  */
 const sessionManager = () => {
+  
   return {
     /**
      * Set user session.
