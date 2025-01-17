@@ -2,9 +2,10 @@
   "name": "expensetracker",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "backend/server.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "start": "node backend/server.js"
   },
   "keywords": [],
   "author": "",
